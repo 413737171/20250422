@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>按鈕範例</title>
+    <style>
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 200px;
+            margin: 20px 0; /* 移除水平置中 */
+            position: absolute; /* 使用絕對定位 */
+            top: 20px; /* 距離視窗頂部 20px */
+            left: auto; /* 移除原本的 left 屬性 */
+            right: 20px; /* 將按鈕容器固定在視窗的最右邊 */
+            align-items: flex-end; /* 將按鈕對齊到右邊 */
+            transition: transform 0.3s ease, opacity 0.3s ease; /* 增加過渡效果 */
+            transform: translateX(0); /* 移除滑入滑出的效果 */
+            opacity: 1; /* 預設顯示 */
+            z-index: 9999; /* 確保按鈕位於圖層最上面 */
+        }
+        .button-container:hover {
+            transform: translateX(0); /* 保持按鈕固定在視窗內 */
+            opacity: 1; /* 顯示按鍵 */
+        }
+        .button {
+            width: 120px; /* 設定按鈕寬度 */
+            height: 120px; /* 設定按鈕高度 */
+            font-size: 16px; /* 調整字體大小以適應按鈕尺寸 */
+            color: #fff;
+            background-color: #D2B48C; /* 設定淺咖啡色 */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #C0A080; /* 調整淺咖啡色的 hover 效果 */
+        }
+        .sub-button-container {
+            display: none; /* 預設隱藏子選項 */
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 20px;
+            align-items: flex-start;
+        }
+        .sub-button-container.active {
+            display: flex; /* 顯示子選項 */
+        }
+        .sub-button-container .button {
+            width: 120px; /* 設定子選項按鈕寬度 */
+            height: 80px; /* 設定子選項按鈕高度 */
+        }
+        body {
+            background-color: #000033; /* 設定更深的藍色背景 */
+        }
+        .iframe-container {
+            display: none; /* 預設隱藏 iframe */
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 80%;
+            height: 80%;
+            border: 2px solid #D2B48C;
+            background-color: #fff;
+            z-index: 1000;
+        }
+        .iframe-container.active {
+            display: block; /* 顯示 iframe */
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: lightblue; /* 改為淡藍色 */
+            pointer-events: none; /* 防止干擾滑鼠事件 */
+        }
+        .intro-container {
+            display: none; /* 預設隱藏自我介紹區域 */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #D2B48C;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 99999; /* 提高 z-index 確保在圖層最上方 */
+            overflow: hidden; /* 防止星星超出邊界 */
+        }
+        .intro-container.active {
+            display: block; /* 確保顯示樣式為 block */
+        }
+        * {
+            border: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --hue-primary: 223;
+            --hue-secondary: 178;
+            --primary500: hsl(var(--hue-primary), 90%, 50%);
+            --primary600: hsl(var(--hue-primary), 90%, 60%);
+            --primary700: hsl(var(--hue-primary), 90%, 70%);
+            --secondary800: hsl(var(--hue-secondary), 90%, 80%);
+            --dark-gray50: hsl(var(--hue-primary), 90%, 5%);
+            --dark-gray100: hsl(var(--hue-primary), 90%, 10%);
+            --white0: hsla(0, 0%, 100%, 0);
+            --white50: hsla(0, 0%, 100%, 0.05);
+            --white100: hsla(0, 0%, 100%, 0.1);
+            --white200: hsla(0, 0%, 100%, 0.2);
+            --white300: hsla(0, 0%, 100%, 0.3);
+            --white400: hsla(0, 0%, 100%, 0.4);
+            --white500: hsla(0, 0%, 100%, 0.5);
+            --white: hsl(0, 0%, 100%);
+            font-size: clamp(0.75rem, 0.65rem + 0.5vw, 1.25rem);
+        }
+        body {
+            background: linear-gradient(90deg, var(--dark-gray100), var(--dark-gray50));
+            color: hsl(0, 0%, 100%);
+            font: 1em/1.5 "Work Sans", sans-serif;
+            display: grid;
+            place-items: center;
+            height: 100vh;
+        }
+        .card {
+            --blur: 12px;
+            --width: 21.1em;
+            --height: 12.8em;
+            --move-by: 2em;
+            background-image: linear-gradient(90deg, var(--primary600), var(--primary500));
+            border-radius: 1em;
+            box-shadow: 0 0.25em 0.375em hsla(0, 0%, 0%, 0.1);
+            position: absolute;
+            top: var(--move-by);
+            left: calc(var(--move-by) * -1);
+            width: var(--width);
+            height: var(--height);
+            transform: translate(-50%, -50%);
+        }
+        .card--glass {
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            background-image: linear-gradient(90deg, var(--white200), var(--white50));
+            color: transparent;
+            top: calc(var(--move-by) * -1);
+            left: var(--move-by);
+        }
+        .card__content {
+            background:
+                linear-gradient(
+                    var(--white0) 3.125em,
+                    var(--primary700) 3.375em,
+                    var(--secondary800) 4.5em
+                ) 0 0 / calc(var(--width) - var(--move-by) * 2) 50%,
+                linear-gradient(
+                    90deg,
+                    var(--secondary800) 13em,
+                    var(--primary700) calc(var(--width) - var(--move-by) * 2),
+                    var(--white0) 19.1em
+                ) 0 100% / 100% 50%,
+                linear-gradient(
+                    90deg,
+                    var(--white500) 4em,
+                    var(--white200)
+                ) 0 0 / 100% 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1.25em 1.5em;
+            position: relative;
+            height: 100%;
+            z-index: 1;
+        }
+        .card__logo,
+        .card__title {
+            font-size: 1.5em; /* 修正為有效的 CSS 屬性 */
+            font-weight: 700; /* 修正為有效的 CSS 屬性 */
+            line-height: 1.17;
+        }
+        .card__logo {
+            text-align: end;
+            width: 25%;
+        }
+        .card__title {
+            font-family: Caladea, serif;
+            width: 75%;
+        }
+        .card__url {
+            font-size: 0.75em;
+            align-self: flex-end;
+            margin-inline-start: auto;
+        }
+        .cards {
+            position: relative;
+        }
+    </style>
+    <script>
+        function toggleSubButtons() {
+            const subButtonContainer = document.querySelector('.sub-button-container');
+            subButtonContainer.classList.toggle('active');
+        }
+        function toggleIframe() {
+            const iframeContainer = document.querySelector('.iframe-container');
+            iframeContainer.classList.toggle('active');
+        }
+        function toggleHomeIframe() {
+            const iframeContainer = document.querySelector('.iframe-container');
+            const iframe = iframeContainer.querySelector('iframe');
+            if (iframeContainer.classList.contains('active')) {
+                iframeContainer.classList.remove('active'); // 收回 iframe
+            } else {
+                iframe.src = "https://www.tku.edu.tw/"; // 設定首頁的 iframe 網址
+                iframeContainer.classList.add('active'); // 開啟 iframe
+            }
+        }
+        function handleButtonClick(sequenceLength, gap) {
+            const iframeContainer = document.querySelector('.iframe-container');
+            const iframe = iframeContainer.querySelector('iframe');
+            iframe.src = "https://hackmd.io/@sita1024/HyGMDMaC1g"; // 設定筆記的 iframe 網址
+            iframeContainer.classList.add('active'); // 顯示 iframe
+        }
+
+        function handleHomeButtonClick() {
+            const iframeContainer = document.querySelector('.iframe-container');
+            const iframe = iframeContainer.querySelector('iframe');
+            iframe.src = "https://www.tku.edu.tw/"; // 設定首頁的 iframe 網址
+            iframeContainer.classList.add('active'); // 顯示 iframe
+        }
+
+        function closeContainer(containerClass) {
+            const container = document.querySelector(`.${containerClass}`);
+            if (!container) {
+                console.error(`Error: .${containerClass} element not found.`);
+                return;
+            }
+            container.classList.remove('active');
+            container.style.display = 'none'; // 確保隱藏容器
+        }
+
+        function toggleContainer(containerClass) {
+            const container = document.querySelector(`.${containerClass}`);
+            if (container.classList.contains('active')) {
+                container.classList.remove('active'); // 關閉視窗
+            } else {
+                container.classList.add('active'); // 開啟視窗
+            }
+        }
+
+        function showVideo(videoUrl) {
+            const iframeContainer = document.querySelector('.iframe-container');
+            const iframe = iframeContainer.querySelector('iframe');
+            iframe.src = videoUrl; // 設定影片的 iframe 網址
+            iframeContainer.classList.add('active'); // 顯示 iframe
+        }
+
+        function createRandomCircles(count) {
+            const body = document.body;
+            const rows = Math.ceil(Math.sqrt(count)); // 計算行數
+            const cols = rows; // 列數與行數相同
+            const rowHeight = window.innerHeight / rows;
+            const colWidth = window.innerWidth / cols;
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (count-- <= 0) break; // 如果超過需要的圓數則停止
+                    const circle = document.createElement('div');
+                    circle.classList.add('circle');
+                    circle.style.width = '30px';
+                    circle.style.height = '30px';
+                    circle.style.top = `${i * rowHeight + rowHeight / 2}px`;
+                    circle.style.left = `${j * colWidth + colWidth / 2}px`;
+                    body.appendChild(circle);
+                }
+            }
+
+            document.addEventListener('mousemove', (event) => {
+                const circles = document.querySelectorAll('.circle');
+                const screenWidth = window.innerWidth;
+
+                circles.forEach((circle) => {
+                    const distanceFromLeft = event.clientX;
+                    const size = 30 + (distanceFromLeft / screenWidth) * 70; // 最大直徑 100px
+                    circle.style.width = `${size}px`;
+                    circle.style.height = `${size}px`;
+                });
+            });
+        }
+
+        function generateStars(container, count) {
+            container.querySelectorAll('.star').forEach(star => star.remove()); // 清除舊的星星
+            const containerWidth = container.offsetWidth;
+            const containerHeight = container.offsetHeight;
+
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = `${Math.random() * containerHeight}px`;
+                star.style.left = `${Math.random() * containerWidth}px`;
+                container.appendChild(star);
+            }
+        }
+
+        function showIntroduction() {
+            const introContainer = document.querySelector('.intro-container');
+            if (!introContainer) {
+                console.error('Error: .intro-container element not found.');
+                return;
+            }
+            // 確保容器顯示
+            introContainer.classList.add('active');
+            introContainer.style.display = 'block'; // 確保顯示樣式為 block
+            introContainer.innerHTML = `
+                <div>
+                    <p>姓名：蕭奕婕</p>
+                    <p>年齡：21</p>
+                    <p>就讀：淡江大學</p>
+                    <p>科系：教育科技學系</p>
+                    <p>興趣：唱歌、彈吉他</p>
+                </div>
+                <button class="close-button" onclick="closeContainer('intro-container')">關閉</button>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createRandomCircles(50); // 生成 50 個圓
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+    </div>
+    <div class="button-container">
+        <button class="button" ondblclick="toggleContainer('iframe-container')" onclick="toggleContainer('iframe-container')">首頁</button>
+        <button class="button" onclick="handleButtonClick(40, 8)">筆記</button>
+        <button class="button" onclick="showVideo('https://cfchen58.synology.me/%E4%BA%92%E5%8B%95%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/1132/week3/20250304_091843.mp4')">教學影片</button>
+        <button class="button" onclick="showVideo('https://413737171.github.io/20250311/')">作品集</button>
+        <button class="button" onclick="showIntroduction()">自我介紹</button>
+    </div>
+    <div class="iframe-container">
+        <button class="close-button" onclick="toggleContainer('iframe-container')">關閉</button>
+        <iframe src="https://www.tku.edu.tw/" title="動態內容"></iframe>
+    </div>
+    <div class="intro-container"></div>
+</body>
+</html>
